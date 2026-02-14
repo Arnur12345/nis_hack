@@ -1,18 +1,21 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import MapView, { Marker, PROVIDER_DEFAULT } from 'react-native-maps';
 import { useFocusEffect } from '@react-navigation/native';
+import Icon, { IconName } from '../components/Icon';
 import { getEvents } from '../api/events';
 import { Event } from '../types';
-import { Colors, CategoryIcons, CategoryLabels } from '../constants/colors';
+import { Colors, CategoryColors, CategoryLabels, Radius, Shadows, Spacing } from '../constants/colors';
 
+const { width, height } = Dimensions.get('window');
 const ALMATY = { latitude: 43.238, longitude: 76.945, latitudeDelta: 0.08, longitudeDelta: 0.08 };
 
 const MARKER_COLORS: Record<string, string> = {
-  ecology: '#00B894',
-  social: '#E17055',
-  animals: '#FDCB6E',
-  education: '#74B9FF',
+  ecology: Colors.ecology, social: Colors.social, animals: Colors.animals, education: Colors.education,
+};
+
+const CAT_ICONS: Record<string, IconName> = {
+  ecology: 'leaf', social: 'handshake-outline', animals: 'paw', education: 'book-open-variant',
 };
 
 export default function MapScreen({ navigation }: any) {
@@ -20,25 +23,13 @@ export default function MapScreen({ navigation }: any) {
   const [selected, setSelected] = useState<Event | null>(null);
   const mapRef = useRef<MapView>(null);
 
-  useFocusEffect(
-    useCallback(() => {
-      (async () => {
-        try {
-          const { data } = await getEvents();
-          setEvents(data.events);
-        } catch { }
-      })();
-    }, [])
-  );
+  useFocusEffect(useCallback(() => {
+    (async () => { try { const { data } = await getEvents(); setEvents(data.events); } catch { } })();
+  }, []));
 
   return (
     <View style={styles.container}>
-      <MapView
-        ref={mapRef}
-        style={styles.map}
-        initialRegion={ALMATY}
-        provider={PROVIDER_DEFAULT}
-      >
+      <MapView ref={mapRef} style={styles.map} initialRegion={ALMATY} provider={PROVIDER_DEFAULT}>
         {events.map((event) => (
           <Marker
             key={event.id}
@@ -49,25 +40,40 @@ export default function MapScreen({ navigation }: any) {
         ))}
       </MapView>
 
+      <View style={styles.floatingHeader}>
+        <Icon name="map-marker-outline" size={16} color={Colors.primary} />
+        <Text style={styles.headerTitle}>Карта событий</Text>
+        <View style={styles.countBadge}>
+          <Text style={styles.countText}>{events.length}</Text>
+        </View>
+      </View>
+
       {selected && (
         <TouchableOpacity
-          style={styles.card}
-          activeOpacity={0.9}
-          onPress={() => navigation.navigate('Events', {
-            screen: 'EventDetail',
-            params: { eventId: selected.id },
-          })}
+          style={styles.card} activeOpacity={0.9}
+          onPress={() => navigation.navigate('Events', { screen: 'EventDetail', params: { eventId: selected.id } })}
         >
-          <View style={[styles.dot, { backgroundColor: MARKER_COLORS[selected.category] }]} />
-          <View style={styles.cardContent}>
-            <Text style={styles.cardCategory}>
-              {CategoryIcons[selected.category]} {CategoryLabels[selected.category]}
-            </Text>
-            <Text style={styles.cardTitle}>{selected.title}</Text>
-            <Text style={styles.cardAddress} numberOfLines={1}>📍 {selected.address}</Text>
-            <View style={styles.cardFooter}>
-              <Text style={styles.cardXP}>+{selected.xp_reward} XP</Text>
-              <Text style={styles.cardArrow}>Подробнее →</Text>
+          <View style={styles.cardTop}>
+            <View style={[styles.catBadge, { backgroundColor: (MARKER_COLORS[selected.category] || Colors.primary) + '12' }]}>
+              <Icon name={CAT_ICONS[selected.category] || 'leaf'} size={12} color={MARKER_COLORS[selected.category] || Colors.primary} />
+              <Text style={[styles.catText, { color: MARKER_COLORS[selected.category] }]}>{CategoryLabels[selected.category]}</Text>
+            </View>
+            <Text style={styles.xp}>+{selected.xp_reward} XP</Text>
+          </View>
+          <Text style={styles.cardTitle} numberOfLines={1}>{selected.title}</Text>
+          <View style={styles.cardMeta}>
+            <Icon name="map-marker-outline" size={12} color={Colors.textLight} />
+            <Text style={styles.cardAddress} numberOfLines={1}>{selected.address}</Text>
+          </View>
+          <View style={styles.cardFooter}>
+            <View style={styles.metaItem}>
+              <Icon name="clock-outline" size={12} color={Colors.textLight} />
+              <Text style={styles.metaText}>
+                {new Date(selected.start_time).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+              </Text>
+            </View>
+            <View style={styles.arrowBtn}>
+              <Icon name="chevron-right" size={14} color="#FFF" />
             </View>
           </View>
         </TouchableOpacity>
@@ -78,28 +84,30 @@ export default function MapScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  map: { width: Dimensions.get('window').width, height: Dimensions.get('window').height },
-  card: {
-    position: 'absolute',
-    bottom: 100,
-    left: 16,
-    right: 16,
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 16,
-    flexDirection: 'row',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
+  map: { width, height },
+  floatingHeader: {
+    position: 'absolute', top: Platform.OS === 'ios' ? 60 : 44,
+    left: Spacing.lg, right: Spacing.lg,
+    backgroundColor: Colors.card, borderRadius: Radius.md,
+    paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md,
+    flexDirection: 'row', alignItems: 'center', gap: 8, ...Shadows.md,
   },
-  dot: { width: 8, height: 8, borderRadius: 4, marginTop: 6, marginRight: 12 },
-  cardContent: { flex: 1 },
-  cardCategory: { fontSize: 12, fontWeight: '600', marginBottom: 4 },
-  cardTitle: { fontSize: 17, fontWeight: '700', color: Colors.text, marginBottom: 4 },
-  cardAddress: { fontSize: 13, color: Colors.textSecondary, marginBottom: 8 },
-  cardFooter: { flexDirection: 'row', justifyContent: 'space-between' },
-  cardXP: { fontSize: 14, fontWeight: '700', color: Colors.primary },
-  cardArrow: { fontSize: 13, color: Colors.primary, fontWeight: '600' },
+  headerTitle: { flex: 1, fontSize: 15, fontWeight: '600', color: Colors.text },
+  countBadge: { backgroundColor: Colors.accentSurface, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full },
+  countText: { fontSize: 12, fontWeight: '700', color: Colors.primary },
+  card: {
+    position: 'absolute', bottom: 100, left: Spacing.lg, right: Spacing.lg,
+    backgroundColor: Colors.card, borderRadius: Radius.lg, padding: Spacing.lg, ...Shadows.lg,
+  },
+  cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.sm },
+  catBadge: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.sm },
+  catText: { fontSize: 12, fontWeight: '600' },
+  xp: { fontSize: 12, fontWeight: '700', color: Colors.primary },
+  cardTitle: { fontSize: 16, fontWeight: '600', color: Colors.text, marginBottom: 6 },
+  cardMeta: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: Spacing.md },
+  cardAddress: { fontSize: 13, color: Colors.textSecondary, flex: 1 },
+  cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Spacing.sm, borderTopWidth: 1, borderTopColor: Colors.borderLight },
+  metaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  metaText: { fontSize: 12, color: Colors.textSecondary },
+  arrowBtn: { width: 32, height: 32, borderRadius: 10, backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center' },
 });

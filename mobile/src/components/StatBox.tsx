@@ -1,6 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Colors } from '../constants/colors';
+import Icon, { IconName } from './Icon';
+import { Colors, Radius, Shadows, Spacing } from '../constants/colors';
+
+const STAT_ICONS: Record<string, IconName> = {
+  'Мероприятий': 'crosshairs-gps',
+  'Всего XP': 'lightning-bolt',
+  'Уровень': 'chart-bar',
+  'Серия': 'fire',
+};
 
 interface Props {
   label: string;
@@ -8,10 +16,12 @@ interface Props {
   icon: string;
 }
 
-export default function StatBox({ label, value, icon }: Props) {
+export default function StatBox({ label, value }: Props) {
   return (
     <View style={styles.box}>
-      <Text style={styles.icon}>{icon}</Text>
+      <View style={styles.iconBox}>
+        <Icon name={STAT_ICONS[label] || 'lightning-bolt'} size={18} color={Colors.primary} />
+      </View>
       <Text style={styles.value}>{value}</Text>
       <Text style={styles.label}>{label}</Text>
     </View>
@@ -20,19 +30,13 @@ export default function StatBox({ label, value, icon }: Props) {
 
 const styles = StyleSheet.create({
   box: {
-    width: '46%',
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    margin: '2%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    width: '46%', backgroundColor: Colors.card, borderRadius: Radius.lg,
+    padding: Spacing.lg, alignItems: 'center', margin: '2%', ...Shadows.sm,
   },
-  icon: { fontSize: 28, marginBottom: 4 },
-  value: { fontSize: 22, fontWeight: '800', color: Colors.text },
-  label: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
+  iconBox: {
+    width: 40, height: 40, borderRadius: 12, backgroundColor: Colors.accentSurface,
+    justifyContent: 'center', alignItems: 'center', marginBottom: Spacing.sm,
+  },
+  value: { fontSize: 22, fontWeight: '700', color: Colors.text, marginBottom: 2 },
+  label: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
 });

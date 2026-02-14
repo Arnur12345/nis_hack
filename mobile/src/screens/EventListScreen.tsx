@@ -1,12 +1,13 @@
 import React, { useState, useCallback } from 'react';
-import { View, FlatList, StyleSheet, Text, RefreshControl } from 'react-native';
+import { View, FlatList, StyleSheet, Text, RefreshControl, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import Icon from '../components/Icon';
 import { getEvents } from '../api/events';
 import EventCard from '../components/EventCard';
 import CategoryChip from '../components/CategoryChip';
 import { Event } from '../types';
 import { CATEGORIES } from '../constants/categories';
-import { Colors } from '../constants/colors';
+import { Colors, Spacing } from '../constants/colors';
 
 export default function EventListScreen({ navigation }: any) {
   const [events, setEvents] = useState<Event[]>([]);
@@ -22,48 +23,55 @@ export default function EventListScreen({ navigation }: any) {
     setLoading(false);
   }, [selectedCategory]);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [fetchData])
-  );
+  useFocusEffect(useCallback(() => { fetchData(); }, [fetchData]));
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Мероприятия</Text>
-      <View style={styles.chips}>
-        <CategoryChip
-          category="all"
-          selected={selectedCategory === null}
-          onPress={() => setSelectedCategory(null)}
+      <View style={styles.headerSection}>
+        <Text style={styles.header}>Мероприятия</Text>
+        <Text style={styles.sub}>Найди возможность помочь</Text>
+      </View>
+      <View style={styles.chipsWrap}>
+        <FlatList
+          horizontal showsHorizontalScrollIndicator={false}
+          data={['all', ...CATEGORIES]}
+          keyExtractor={(item) => item}
+          contentContainerStyle={styles.chips}
+          renderItem={({ item }) => (
+            <CategoryChip
+              category={item}
+              selected={item === 'all' ? selectedCategory === null : selectedCategory === item}
+              onPress={() => setSelectedCategory(item === 'all' ? null : (selectedCategory === item ? null : item))}
+            />
+          )}
         />
-        {CATEGORIES.map((cat) => (
-          <CategoryChip
-            key={cat}
-            category={cat}
-            selected={selectedCategory === cat}
-            onPress={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
-          />
-        ))}
       </View>
       <FlatList
-        data={events}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <EventCard event={item} onPress={() => navigation.navigate('EventDetail', { eventId: item.id })} />
-        )}
-        refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchData} />}
-        contentContainerStyle={styles.list}
-        ListEmptyComponent={<Text style={styles.empty}>Нет мероприятий</Text>}
+        data={events} keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <EventCard event={item} onPress={() => navigation.navigate('EventDetail', { eventId: item.id })} />}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchData} tintColor={Colors.primary} />}
+        contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <Icon name="magnify" size={32} color={Colors.textLight} />
+            <Text style={styles.emptyTitle}>Нет мероприятий</Text>
+            <Text style={styles.emptySub}>Попробуй сменить категорию</Text>
+          </View>
+        }
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.background, paddingTop: 60 },
-  header: { fontSize: 24, fontWeight: '800', color: Colors.text, paddingHorizontal: 16, marginBottom: 12 },
-  chips: { flexDirection: 'row', paddingHorizontal: 16, marginBottom: 8, flexWrap: 'wrap' },
-  list: { paddingBottom: 20 },
-  empty: { textAlign: 'center', color: Colors.textSecondary, marginTop: 40, fontSize: 16 },
+  container: { flex: 1, backgroundColor: Colors.background },
+  headerSection: { paddingTop: Platform.OS === 'ios' ? 64 : 48, paddingHorizontal: Spacing.lg, paddingBottom: Spacing.md },
+  header: { fontSize: 26, fontWeight: '700', color: Colors.text, letterSpacing: -0.3 },
+  sub: { fontSize: 14, color: Colors.textSecondary, marginTop: 2 },
+  chipsWrap: { marginBottom: Spacing.sm },
+  chips: { paddingHorizontal: Spacing.lg },
+  list: { paddingBottom: 100 },
+  empty: { alignItems: 'center', marginTop: 60, gap: 8 },
+  emptyTitle: { fontSize: 17, fontWeight: '600', color: Colors.text },
+  emptySub: { fontSize: 14, color: Colors.textSecondary },
 });

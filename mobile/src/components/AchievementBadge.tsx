@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Icon from './Icon';
 import { Achievement } from '../types';
-import { Colors } from '../constants/colors';
+import { Colors, Radius, Shadows, Spacing } from '../constants/colors';
 
 interface Props {
   achievement: Achievement;
@@ -10,9 +11,11 @@ interface Props {
 
 export default function AchievementBadge({ achievement, earned }: Props) {
   return (
-    <View style={[styles.badge, !earned && styles.locked]}>
-      <Text style={styles.icon}>{achievement.icon}</Text>
-      <Text style={[styles.title, !earned && styles.lockedText]} numberOfLines={1}>
+    <View style={[styles.badge, earned ? styles.earnedBadge : styles.lockedBadge]}>
+      <View style={[styles.iconCircle, earned ? styles.earnedCircle : styles.lockedCircle]}>
+        <Icon name={earned ? 'shield-star-outline' : 'lock-outline'} size={earned ? 20 : 16} color={earned ? Colors.primary : Colors.textLight} />
+      </View>
+      <Text style={[styles.title, !earned && styles.lockedText]} numberOfLines={2}>
         {achievement.title}
       </Text>
       {earned && <Text style={styles.bonus}>+{achievement.xp_bonus} XP</Text>}
@@ -21,22 +24,13 @@ export default function AchievementBadge({ achievement, earned }: Props) {
 }
 
 const styles = StyleSheet.create({
-  badge: {
-    width: '30%',
-    alignItems: 'center',
-    backgroundColor: Colors.card,
-    borderRadius: 12,
-    padding: 12,
-    margin: '1.5%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  locked: { opacity: 0.4 },
-  icon: { fontSize: 32, marginBottom: 4 },
-  title: { fontSize: 11, fontWeight: '600', color: Colors.text, textAlign: 'center' },
+  badge: { width: '30%', alignItems: 'center', backgroundColor: Colors.card, borderRadius: Radius.md, padding: Spacing.md, margin: '1.5%' },
+  earnedBadge: { borderWidth: 1, borderColor: Colors.accentSurface, ...Shadows.sm },
+  lockedBadge: { opacity: 0.45, borderWidth: 1, borderColor: Colors.border },
+  iconCircle: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginBottom: Spacing.xs },
+  earnedCircle: { backgroundColor: Colors.accentSurface },
+  lockedCircle: { backgroundColor: Colors.borderLight },
+  title: { fontSize: 11, fontWeight: '600', color: Colors.text, textAlign: 'center', lineHeight: 14 },
   lockedText: { color: Colors.textLight },
-  bonus: { fontSize: 10, color: Colors.primary, marginTop: 2 },
+  bonus: { fontSize: 10, fontWeight: '700', color: Colors.primary, marginTop: 3 },
 });

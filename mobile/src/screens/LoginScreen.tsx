@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet,
+  Alert, ActivityIndicator, KeyboardAvoidingView, Platform,
+} from 'react-native';
+import Icon from '../components/Icon';
 import { useAuthStore } from '../store/authStore';
-import { Colors } from '../constants/colors';
+import { Colors, Radius } from '../constants/colors';
 
 export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
@@ -23,59 +27,68 @@ export default function LoginScreen({ navigation }: any) {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <Text style={styles.title}>Вход</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        placeholderTextColor={Colors.textLight}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Пароль"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        placeholderTextColor={Colors.textLight}
-      />
-
-      <TouchableOpacity style={styles.btn} onPress={handleLogin} disabled={loading}>
-        {loading ? <ActivityIndicator color="#FFF" /> : <Text style={styles.btnText}>Войти</Text>}
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name="arrow-left" size={20} color={Colors.text} />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text style={styles.link}>Нет аккаунта? Зарегистрироваться</Text>
-      </TouchableOpacity>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <View style={styles.iconBox}>
+            <Icon name="leaf" size={22} color={Colors.primary} />
+          </View>
+          <Text style={styles.title}>Добро пожаловать</Text>
+          <Text style={styles.subtitle}>Войдите в свой аккаунт</Text>
+        </View>
+
+        <View style={styles.form}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={styles.input} placeholder="your@email.com"
+            value={email} onChangeText={setEmail}
+            keyboardType="email-address" autoCapitalize="none"
+            placeholderTextColor={Colors.textLight}
+          />
+          <Text style={styles.label}>Пароль</Text>
+          <TextInput
+            style={styles.input} placeholder="Введите пароль"
+            value={password} onChangeText={setPassword}
+            secureTextEntry placeholderTextColor={Colors.textLight}
+          />
+          <TouchableOpacity style={styles.btn} onPress={handleLogin} disabled={loading} activeOpacity={0.85}>
+            {loading ? <ActivityIndicator color="#FFF" /> : <Text style={styles.btnText}>Войти</Text>}
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.link}>
+          <Text style={styles.linkGrey}>Нет аккаунта? </Text>
+          <Text style={styles.linkGreen}>Зарегистрироваться</Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: Colors.background },
-  title: { fontSize: 28, fontWeight: '800', color: Colors.text, marginBottom: 30, textAlign: 'center' },
+  container: { flex: 1, backgroundColor: Colors.background },
+  backBtn: { paddingTop: Platform.OS === 'ios' ? 60 : 48, paddingHorizontal: 24, paddingBottom: 8 },
+  content: { flex: 1, justifyContent: 'center', paddingHorizontal: 24, marginTop: -40 },
+  header: { alignItems: 'center', marginBottom: 32 },
+  iconBox: {
+    width: 52, height: 52, borderRadius: 16, backgroundColor: Colors.accentSurface,
+    justifyContent: 'center', alignItems: 'center', marginBottom: 20,
+  },
+  title: { fontSize: 26, fontWeight: '700', color: Colors.text, letterSpacing: -0.3, marginBottom: 4 },
+  subtitle: { fontSize: 15, color: Colors.textSecondary },
+  form: { gap: 6 },
+  label: { fontSize: 13, fontWeight: '600', color: Colors.text, marginLeft: 2, marginTop: 8, marginBottom: 4 },
   input: {
-    backgroundColor: Colors.card,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    color: Colors.text,
+    backgroundColor: Colors.card, borderRadius: Radius.md,
+    paddingHorizontal: 16, paddingVertical: 14, fontSize: 15,
+    borderWidth: 1, borderColor: Colors.border, color: Colors.text,
   },
-  btn: {
-    backgroundColor: Colors.primary,
-    borderRadius: 14,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  btnText: { fontSize: 17, fontWeight: '700', color: '#FFF' },
-  link: { fontSize: 14, color: Colors.primary, textAlign: 'center', fontWeight: '600' },
+  btn: { backgroundColor: Colors.primary, borderRadius: Radius.md, paddingVertical: 16, alignItems: 'center', marginTop: 16 },
+  btnText: { fontSize: 16, fontWeight: '700', color: '#FFF' },
+  link: { flexDirection: 'row', justifyContent: 'center', marginTop: 24 },
+  linkGrey: { fontSize: 14, color: Colors.textSecondary },
+  linkGreen: { fontSize: 14, color: Colors.primary, fontWeight: '700' },
 });
