@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon, { IconName } from '../components/Icon';
@@ -6,15 +6,47 @@ import { useAuthStore } from '../store/authStore';
 import { usePetStore } from '../store/petStore';
 import PetDisplay from '../components/PetDisplay';
 import XPBar from '../components/XPBar';
+import ActivityChart from '../components/ActivityChart';
+import { getActivity } from '../api/gamification';
+import { ActivityResponse } from '../types';
 import { Colors, Radius, Shadows, Spacing } from '../constants/colors';
+
+const DAY_NAMES = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+
+function getDefaultActivity(): ActivityResponse {
+  const today = new Date();
+  const weekly_activity = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    weekly_activity.push({
+      day: DAY_NAMES[d.getDay() === 0 ? 6 : d.getDay() - 1],
+      date: d.toISOString().split('T')[0],
+      count: 0,
+      xp: 0,
+    });
+  }
+  return { weekly_activity, this_week_events: 0, this_week_xp: 0, category_breakdown: {} };
+}
 
 export default function HomeScreen({ navigation }: any) {
   const authPet = useAuthStore((s) => s.pet);
   const user = useAuthStore((s) => s.user);
   const { pet: storePet, fetchPet, isLoading } = usePetStore();
   const pet = storePet || authPet;
+  const [activity, setActivity] = useState<ActivityResponse>(getDefaultActivity());
 
-  useFocusEffect(useCallback(() => { fetchPet(); }, []));
+  const fetchAll = useCallback(async () => {
+    fetchPet();
+    try {
+      const res = await getActivity();
+      setActivity(res.data);
+    } catch {
+      // API failed — keep default empty activity so section still renders
+    }
+  }, []);
+
+  useFocusEffect(useCallback(() => { fetchAll(); }, [fetchAll]));
 
   if (!pet) return (
     <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -33,7 +65,7 @@ export default function HomeScreen({ navigation }: any) {
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchPet} tintColor={Colors.primary} />}
+      refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchAll} tintColor={Colors.primary} />}
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.header}>
@@ -55,6 +87,10 @@ export default function HomeScreen({ navigation }: any) {
           <Text style={styles.streakLabel}>Серия подряд</Text>
         </View>
       </View>
+
+      {/* Activity Statistics */}
+      <Text style={styles.sectionTitle}>Моя активность</Text>
+      <ActivityChart data={activity} />
 
       <Text style={styles.sectionTitle}>Быстрые действия</Text>
       <View style={styles.actions}>

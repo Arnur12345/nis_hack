@@ -74,3 +74,17 @@ export interface StatsResponse {
   level: number;
   category_counts: Record<string, number>;
 }
+
+export interface DayActivity {
+  day: string;
+  date: string;
+  count: number;
+  xp: number;
+}
+
+export interface ActivityResponse {
+  weekly_activity: DayActivity[];
+  this_week_events: number;
+  this_week_xp: number;
+  category_breakdown: Record<string, number>;
+}

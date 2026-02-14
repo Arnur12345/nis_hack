@@ -1,5 +1,5 @@
 import client from './client';
-import { LeaderboardEntry, Achievement, StatsResponse } from '../types';
+import { LeaderboardEntry, Achievement, StatsResponse, ActivityResponse } from '../types';
 
 export const getLeaderboard = () =>
   client.get<{ leaderboard: LeaderboardEntry[] }>('/api/v1/leaderboard');
@@ -9,3 +9,6 @@ export const getAchievements = () =>
 
 export const getStats = () =>
   client.get<StatsResponse>('/api/v1/profile/stats');
+
+export const getActivity = () =>
+  client.get<ActivityResponse>('/api/v1/profile/activity');

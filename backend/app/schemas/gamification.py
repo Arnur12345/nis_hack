@@ -44,3 +44,17 @@ class StatsResponse(BaseModel):
     streak_days: int
     level: int
     category_counts: dict[str, int]
+
+
+class DayActivity(BaseModel):
+    day: str
+    date: str
+    count: int
+    xp: int
+
+
+class ActivityResponse(BaseModel):
+    weekly_activity: list[DayActivity]
+    this_week_events: int
+    this_week_xp: int
+    category_breakdown: dict[str, int]
