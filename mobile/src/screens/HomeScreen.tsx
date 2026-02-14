@@ -7,6 +7,7 @@ import { usePetStore } from '../store/petStore';
 import PetDisplay from '../components/PetDisplay';
 import XPBar from '../components/XPBar';
 import ActivityChart from '../components/ActivityChart';
+import HomeScreenSkeleton from '../components/skeletons/HomeScreenSkeleton';
 import { getActivity } from '../api/gamification';
 import { ActivityResponse } from '../types';
 import { Colors, Radius, Shadows, Spacing } from '../constants/colors';
@@ -48,11 +49,7 @@ export default function HomeScreen({ navigation }: any) {
 
   useFocusEffect(useCallback(() => { fetchAll(); }, [fetchAll]));
 
-  if (!pet) return (
-    <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-      <Text style={{ fontSize: 15, color: Colors.textSecondary }}>Загрузка...</Text>
-    </View>
-  );
+  if (!pet) return <HomeScreenSkeleton />;
 
   const actions: { icon: IconName; label: string; sub: string; tab: string }[] = [
     { icon: 'calendar-month-outline', label: 'Мероприятия', sub: 'Найти и помочь', tab: 'Events' },

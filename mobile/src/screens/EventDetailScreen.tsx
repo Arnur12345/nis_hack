@@ -4,6 +4,7 @@ import Icon, { IconName } from '../components/Icon';
 import { getEventDetail, joinEvent, completeEvent } from '../api/events';
 import { usePetStore } from '../store/petStore';
 import { useAuthStore } from '../store/authStore';
+import EventDetailSkeleton from '../components/skeletons/EventDetailSkeleton';
 import { Event } from '../types';
 import { Colors, CategoryColors, CategoryLabels, Radius, Shadows, Spacing } from '../constants/colors';
 
@@ -54,7 +55,7 @@ export default function EventDetailScreen({ route, navigation }: any) {
     setActionLoading(false);
   };
 
-  if (loading) return <View style={styles.center}><ActivityIndicator size="large" color={Colors.primary} /></View>;
+  if (loading) return <EventDetailSkeleton />;
   if (!event) return <View style={styles.center}><Text style={{ color: Colors.textSecondary }}>Мероприятие не найдено</Text></View>;
 
   const catColor = CategoryColors[event.category] || Colors.primary;

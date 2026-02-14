@@ -4,17 +4,20 @@ import { useFocusEffect } from '@react-navigation/native';
 import Icon from '../components/Icon';
 import { getLeaderboard } from '../api/gamification';
 import LeaderboardRow from '../components/LeaderboardRow';
+import LeaderboardListSkeleton from '../components/skeletons/LeaderboardSkeleton';
 import { LeaderboardEntry } from '../types';
 import { Colors, Spacing, Radius } from '../constants/colors';
 
 export default function LeaderboardScreen() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try { const { data } = await getLeaderboard(); setEntries(data.leaderboard); } catch { }
     setLoading(false);
+    setInitialLoad(false);
   }, []);
 
   useFocusEffect(useCallback(() => { fetchData(); }, [fetchData]));
@@ -36,11 +39,15 @@ export default function LeaderboardScreen() {
         refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchData} tintColor={Colors.primary} />}
         contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}
         ListEmptyComponent={
-          <View style={styles.empty}>
-            <Icon name="trophy-outline" size={32} color={Colors.textLight} />
-            <Text style={styles.emptyTitle}>Пока нет участников</Text>
-            <Text style={styles.emptySub}>Будь первым!</Text>
-          </View>
+          initialLoad ? (
+            <LeaderboardListSkeleton count={8} />
+          ) : (
+            <View style={styles.empty}>
+              <Icon name="trophy-outline" size={32} color={Colors.textLight} />
+              <Text style={styles.emptyTitle}>Пока нет участников</Text>
+              <Text style={styles.emptySub}>Будь первым!</Text>
+            </View>
+          )
         }
       />
     </View>

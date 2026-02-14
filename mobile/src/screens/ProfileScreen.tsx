@@ -6,6 +6,7 @@ import { useAuthStore } from '../store/authStore';
 import { getStats, getAchievements } from '../api/gamification';
 import StatBox from '../components/StatBox';
 import AchievementBadge from '../components/AchievementBadge';
+import ProfileScreenSkeleton from '../components/skeletons/ProfileScreenSkeleton';
 import { Achievement, StatsResponse } from '../types';
 import { Colors, Spacing, Radius, Shadows } from '../constants/colors';
 
@@ -14,7 +15,8 @@ export default function ProfileScreen() {
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [earned, setEarned] = useState<Achievement[]>([]);
   const [available, setAvailable] = useState<Achievement[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -23,9 +25,12 @@ export default function ProfileScreen() {
       setStats(statsRes.data); setEarned(achieveRes.data.earned); setAvailable(achieveRes.data.available);
     } catch { }
     setLoading(false);
+    setInitialLoad(false);
   }, []);
 
   useFocusEffect(useCallback(() => { fetchData(); }, [fetchData]));
+
+  if (initialLoad && loading) return <ProfileScreenSkeleton />;
 
   return (
     <ScrollView

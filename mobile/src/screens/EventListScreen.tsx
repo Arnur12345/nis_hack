@@ -5,6 +5,7 @@ import Icon from '../components/Icon';
 import { getEvents } from '../api/events';
 import EventCard from '../components/EventCard';
 import CategoryChip from '../components/CategoryChip';
+import { EventListSkeleton } from '../components/skeletons/EventCardSkeleton';
 import { Event } from '../types';
 import { CATEGORIES } from '../constants/categories';
 import { Colors, Spacing } from '../constants/colors';
@@ -12,7 +13,8 @@ import { Colors, Spacing } from '../constants/colors';
 export default function EventListScreen({ navigation }: any) {
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -21,6 +23,7 @@ export default function EventListScreen({ navigation }: any) {
       setEvents(data.events);
     } catch { }
     setLoading(false);
+    setInitialLoad(false);
   }, [selectedCategory]);
 
   useFocusEffect(useCallback(() => { fetchData(); }, [fetchData]));
@@ -52,11 +55,15 @@ export default function EventListScreen({ navigation }: any) {
         refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchData} tintColor={Colors.primary} />}
         contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}
         ListEmptyComponent={
-          <View style={styles.empty}>
-            <Icon name="magnify" size={32} color={Colors.textLight} />
-            <Text style={styles.emptyTitle}>Нет мероприятий</Text>
-            <Text style={styles.emptySub}>Попробуй сменить категорию</Text>
-          </View>
+          initialLoad ? (
+            <EventListSkeleton count={5} />
+          ) : (
+            <View style={styles.empty}>
+              <Icon name="magnify" size={32} color={Colors.textLight} />
+              <Text style={styles.emptyTitle}>Нет мероприятий</Text>
+              <Text style={styles.emptySub}>Попробуй сменить категорию</Text>
+            </View>
+          )
         }
       />
     </View>

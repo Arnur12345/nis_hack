@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from '
 import MapView, { Marker, PROVIDER_DEFAULT } from 'react-native-maps';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon, { IconName } from '../components/Icon';
+import Skeleton, { SkeletonLine } from '../components/Skeleton';
 import { getEvents } from '../api/events';
 import { Event } from '../types';
 import { Colors, CategoryColors, CategoryLabels, Radius, Shadows, Spacing } from '../constants/colors';
@@ -21,10 +22,14 @@ const CAT_ICONS: Record<string, IconName> = {
 export default function MapScreen({ navigation }: any) {
   const [events, setEvents] = useState<Event[]>([]);
   const [selected, setSelected] = useState<Event | null>(null);
+  const [mapLoading, setMapLoading] = useState(true);
   const mapRef = useRef<MapView>(null);
 
   useFocusEffect(useCallback(() => {
-    (async () => { try { const { data } = await getEvents(); setEvents(data.events); } catch { } })();
+    (async () => {
+      try { const { data } = await getEvents(); setEvents(data.events); } catch { }
+      setMapLoading(false);
+    })();
   }, []));
 
   return (
@@ -43,9 +48,13 @@ export default function MapScreen({ navigation }: any) {
       <View style={styles.floatingHeader}>
         <Icon name="map-marker-outline" size={16} color={Colors.primary} />
         <Text style={styles.headerTitle}>Карта событий</Text>
-        <View style={styles.countBadge}>
-          <Text style={styles.countText}>{events.length}</Text>
-        </View>
+        {mapLoading ? (
+          <Skeleton width={28} height={22} borderRadius={Radius.full} />
+        ) : (
+          <View style={styles.countBadge}>
+            <Text style={styles.countText}>{events.length}</Text>
+          </View>
+        )}
       </View>
 
       {selected && (
