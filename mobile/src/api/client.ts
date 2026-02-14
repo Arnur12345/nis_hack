@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_URL = __DEV__
-  ? 'http://localhost:8000'
+  ? 'https://flounderingly-houndlike-rae.ngrok-free.dev'
   : 'https://spirit-city-api.up.railway.app';
 
 const client = axios.create({
