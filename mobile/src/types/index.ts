@@ -33,6 +33,23 @@ export interface Event {
   participants_count?: number;
   is_joined?: boolean;
   is_completed?: boolean;
+  creator_id?: string | null;
+  creator_username?: string | null;
+  status?: string;
+  qr_code?: string | null;
+}
+
+export interface EventCreateData {
+  title: string;
+  description: string;
+  category: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  start_time: string;
+  end_time?: string | null;
+  xp_reward: number;
+  max_participants?: number | null;
 }
 
 export interface Achievement {
@@ -87,4 +104,19 @@ export interface ActivityResponse {
   this_week_events: number;
   this_week_xp: number;
   category_breakdown: Record<string, number>;
+}
+
+export interface RecentCompletion {
+  username: string;
+  event_title: string;
+  category: string;
+  completed_at: string | null;
+}
+
+export interface ImpactResponse {
+  total_volunteers: number;
+  total_events_completed: number;
+  total_xp_earned: number;
+  category_breakdown: Record<string, number>;
+  recent_completions: RecentCompletion[];
 }

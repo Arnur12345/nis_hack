@@ -7,21 +7,15 @@ import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
 import EventListScreen from '../screens/EventListScreen';
 import EventDetailScreen from '../screens/EventDetailScreen';
+import CreateEventScreen from '../screens/CreateEventScreen';
+import QRScannerScreen from '../screens/QRScannerScreen';
+import ImpactScreen from '../screens/ImpactScreen';
 import LeaderboardScreen from '../screens/LeaderboardScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { Colors, Shadows } from '../constants/colors';
 
 const Tab = createBottomTabNavigator();
-const EventStack = createNativeStackNavigator();
-
-function EventsNavigator() {
-  return (
-    <EventStack.Navigator screenOptions={{ headerShown: false }}>
-      <EventStack.Screen name="EventList" component={EventListScreen} />
-      <EventStack.Screen name="EventDetail" component={EventDetailScreen} />
-    </EventStack.Navigator>
-  );
-}
+const RootStack = createNativeStackNavigator();
 
 const TAB_ICONS: Record<string, IconName> = {
   Home: 'home-outline',
@@ -47,7 +41,7 @@ const TAB_LABELS: Record<string, string> = {
   Profile: 'Профиль',
 };
 
-export default function MainTabs() {
+function TabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -71,10 +65,22 @@ export default function MainTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Map" component={MapScreen} />
-      <Tab.Screen name="Events" component={EventsNavigator} />
+      <Tab.Screen name="Events" component={EventListScreen} />
       <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
+  );
+}
+
+export default function MainTabs() {
+  return (
+    <RootStack.Navigator screenOptions={{ headerShown: false }}>
+      <RootStack.Screen name="Tabs" component={TabNavigator} />
+      <RootStack.Screen name="EventDetail" component={EventDetailScreen} />
+      <RootStack.Screen name="CreateEvent" component={CreateEventScreen} />
+      <RootStack.Screen name="QRScanner" component={QRScannerScreen} />
+      <RootStack.Screen name="Impact" component={ImpactScreen} />
+    </RootStack.Navigator>
   );
 }
 
@@ -86,7 +92,7 @@ const styles = StyleSheet.create({
     right: 20,
     height: 64,
     backgroundColor: Colors.tabBar,
-    borderRadius: 20,
+    borderRadius: 24,
     borderTopWidth: 0,
     paddingBottom: 0,
     paddingTop: 0,

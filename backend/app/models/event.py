@@ -1,10 +1,14 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import String, Integer, Float, DateTime, Text
+from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+
+
+def _random_code() -> str:
+    return uuid.uuid4().hex[:8]
 
 
 class Event(Base):
@@ -24,4 +28,9 @@ class Event(Base):
     image_url: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
+    qr_code: Mapped[str] = mapped_column(String, unique=True, default=_random_code)
+    creator_id: Mapped[str | None] = mapped_column(String, ForeignKey("users.id"), nullable=True)
+    status: Mapped[str] = mapped_column(String, default="approved")
+
     participations: Mapped[list["EventParticipation"]] = relationship("EventParticipation", back_populates="event")
+    creator: Mapped["User | None"] = relationship("User", foreign_keys=[creator_id])

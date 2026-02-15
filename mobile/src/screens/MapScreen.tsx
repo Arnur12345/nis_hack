@@ -27,7 +27,7 @@ export default function MapScreen({ navigation }: any) {
 
   useFocusEffect(useCallback(() => {
     (async () => {
-      try { const { data } = await getEvents(); setEvents(data.events); } catch { }
+      try { const { data } = await getEvents(); setEvents(data.events); } catch (e: any) { console.error('MapScreen fetch error:', e?.response?.status, e?.response?.data || e?.message); }
       setMapLoading(false);
     })();
   }, []));
@@ -60,7 +60,7 @@ export default function MapScreen({ navigation }: any) {
       {selected && (
         <TouchableOpacity
           style={styles.card} activeOpacity={0.9}
-          onPress={() => navigation.navigate('Events', { screen: 'EventDetail', params: { eventId: selected.id } })}
+          onPress={() => navigation.navigate('EventDetail', { eventId: selected.id })}
         >
           <View style={styles.cardTop}>
             <View style={[styles.catBadge, { backgroundColor: (MARKER_COLORS[selected.category] || Colors.primary) + '12' }]}>

@@ -90,9 +90,9 @@ const styles = StyleSheet.create({
   form: { gap: 4 },
   label: { fontSize: 13, fontWeight: '600', color: Colors.text, marginLeft: 2, marginTop: 8, marginBottom: 4 },
   input: {
-    backgroundColor: Colors.card, borderRadius: Radius.md,
+    backgroundColor: Colors.inputBg, borderRadius: Radius.lg,
     paddingHorizontal: 16, paddingVertical: 14, fontSize: 15,
-    borderWidth: 1, borderColor: Colors.border, color: Colors.text,
+    color: Colors.text,
   },
   btn: { backgroundColor: Colors.primary, borderRadius: Radius.md, paddingVertical: 16, alignItems: 'center', marginTop: 16 },
   btnText: { fontSize: 16, fontWeight: '700', color: '#FFF' },

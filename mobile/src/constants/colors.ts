@@ -1,48 +1,48 @@
-// Single cohesive forest-green palette, minimal and clean
+// Soft pastel + neutral system from design.md, adapted for Spirit of the City
 export const Colors = {
-  // Primary
-  primary: '#1B4332',
-  primaryLight: '#2D6A4F',
-  primaryMuted: '#40916C',
-  accent: '#52B788',
-  accentLight: '#95D5B2',
-  accentSurface: '#D8F3DC',
+  // Primary (Lavender)
+  primary: '#B9A7F6',
+  primaryLight: '#C4B5F7',
+  primaryMuted: '#9B87F5',
+  accent: '#F4DE9E',        // Soft yellow (secondary)
+  accentLight: '#D4C8FC',
+  accentSurface: '#F0ECFF', // Very light lavender tint
 
   // Neutrals
-  background: '#F7F8F7',
+  background: '#F8F7FB',    // Surface Light
   card: '#FFFFFF',
-  text: '#111827',
-  textSecondary: '#6B7280',
-  textLight: '#9CA3AF',
-  border: '#E5E7EB',
+  text: '#1A1A1A',
+  textSecondary: '#8E8E98',
+  textLight: '#B0B0BA',
+  border: '#E8E8ED',
   borderLight: '#F3F4F6',
-  divider: '#E5E7EB',
+  divider: '#E8E8ED',
+  inputBg: '#F1F1F4',       // Input background (borderless style)
 
-  // Semantic (muted, consistent)
-  success: '#40916C',
-  warning: '#B45309',
-  danger: '#DC2626',
+  // Semantic
+  success: '#34C759',
+  warning: '#FFCC00',
+  danger: '#FF3B30',
 
   // XP
-  xpBar: '#52B788',
-  xpBarBg: '#E5E7EB',
+  xpBar: '#B9A7F6',
+  xpBarBg: '#E8E8ED',
 
-  // Tab bar
-  tabBar: '#1B4332',
+  // Tab bar (dark surface)
+  tabBar: '#1E1F23',
   tabActive: '#FFFFFF',
   tabInactive: 'rgba(255,255,255,0.4)',
 
-  // Category colors (all derived from same warmth)
-  ecology: '#2D6A4F',
-  social: '#92400E',
-  animals: '#854D0E',
-  education: '#1E40AF',
+  // Category colors (vibrant pastels)
+  ecology: '#34C759',
+  social: '#FF6B8A',
+  animals: '#F59E0B',
+  education: '#5AC8FA',
 
   // Overlay
-  overlay: 'rgba(17, 24, 39, 0.5)',
+  overlay: 'rgba(26, 26, 26, 0.5)',
 };
 
-// Category icon names (lucide icon names)
 export const CategoryIconNames: Record<string, string> = {
   all: 'list',
   ecology: 'leaf',
@@ -66,48 +66,48 @@ export const CategoryColors: Record<string, string> = {
   education: Colors.education,
 };
 
-// Spacing tokens
+// Spacing tokens (8pt grid)
 export const Spacing = {
   xs: 4,
   sm: 8,
   md: 12,
   lg: 16,
-  xl: 20,
-  xxl: 24,
-  xxxl: 32,
+  xl: 24,
+  xxl: 32,
+  xxxl: 40,
 };
 
-// Radius tokens
+// Radius tokens (generous rounding per design)
 export const Radius = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  xxl: 24,
+  sm: 12,
+  md: 18,
+  lg: 20,
+  xl: 24,
+  xxl: 28,
   full: 999,
 };
 
-// Shadow presets
+// Shadow presets (very soft elevation)
 export const Shadows = {
   sm: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
     elevation: 1,
   },
   md: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
     elevation: 3,
   },
   lg: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.08,
+    shadowRadius: 30,
     elevation: 6,
   },
 };

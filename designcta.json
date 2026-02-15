@@ -1,0 +1,168 @@
+{
+    "meta": {
+      "name": "Event Hero Section Design System",
+      "version": "2.0.0",
+      "designStyle": "Soft Minimal + Premium Gradient UI",
+      "gridBase": 8
+    },
+  
+    "colors": {
+      "brand": {
+        "50": "#F3F0FF",
+        "100": "#EDE8FF",
+        "300": "#CFC4F7",
+        "500": "#B9A7F6",
+        "600": "#9B87F5",
+        "700": "#7C6AE6"
+      },
+      "neutral": {
+        "900": "#151515",
+        "800": "#1A1A1A",
+        "700": "#3A3A3A",
+        "500": "#8E8E98",
+        "200": "#E5E5EA",
+        "100": "#F8F7FB",
+        "0": "#FFFFFF"
+      },
+      "semantic": {
+        "success": "#34C759",
+        "warning": "#FFCC00",
+        "error": "#FF3B30",
+        "info": "#5AC8FA"
+      },
+      "gradients": {
+        "heroBase": "linear-gradient(135deg, #EDE8FF 0%, #CFC4F7 50%, #BCAFF2 100%)",
+        "heroRadialAccent": "radial-gradient(circle at 80% 60%, rgba(155,135,245,0.4), transparent 50%)",
+        "buttonPrimary": "linear-gradient(135deg, #9B87F5 0%, #B9A7F6 100%)"
+      }
+    },
+  
+    "typography": {
+      "fontFamily": {
+        "primary": "Inter, sans-serif"
+      },
+      "weights": {
+        "regular": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700
+      },
+      "scale": {
+        "heroXL": {
+          "fontSize": "64px",
+          "lineHeight": "72px",
+          "letterSpacing": "-0.02em",
+          "fontWeight": 600
+        },
+        "heroL": {
+          "fontSize": "56px",
+          "lineHeight": "64px",
+          "letterSpacing": "-0.02em",
+          "fontWeight": 600
+        },
+        "headingL": {
+          "fontSize": "32px",
+          "lineHeight": "40px",
+          "fontWeight": 600
+        },
+        "bodyL": {
+          "fontSize": "18px",
+          "lineHeight": "28px",
+          "fontWeight": 400
+        },
+        "bodyM": {
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "fontWeight": 400
+        },
+        "caption": {
+          "fontSize": "14px",
+          "lineHeight": "20px",
+          "fontWeight": 400
+        }
+      }
+    },
+  
+    "spacing": {
+      "scale": {
+        "xs": "4px",
+        "sm": "8px",
+        "md": "12px",
+        "lg": "16px",
+        "xl": "24px",
+        "2xl": "32px",
+        "3xl": "40px",
+        "4xl": "56px",
+        "5xl": "72px"
+      }
+    },
+  
+    "layout": {
+      "containerWidth": "1200px",
+      "sectionPadding": "56px 72px",
+      "gridColumns": 12,
+      "columnGap": "24px"
+    },
+  
+    "borderRadius": {
+      "sm": "8px",
+      "md": "16px",
+      "lg": "24px",
+      "xl": "32px",
+      "pill": "999px"
+    },
+  
+    "shadows": {
+      "soft": "0px 10px 30px rgba(0, 0, 0, 0.06)",
+      "medium": "0px 15px 40px rgba(0, 0, 0, 0.08)",
+      "elevatedButton": "0px 8px 20px rgba(155,135,245,0.35)"
+    },
+  
+    "components": {
+      "heroSection": {
+        "background": "heroBase + heroRadialAccent",
+        "padding": "4xl 5xl",
+        "alignment": "left-content, right-visual-accent",
+        "contentMaxWidth": "640px"
+      },
+      "primaryButton": {
+        "height": "56px",
+        "padding": "16px 28px",
+        "borderRadius": "pill",
+        "fontSize": "16px",
+        "fontWeight": 600,
+        "background": "buttonPrimary",
+        "textColor": "#FFFFFF",
+        "hover": {
+          "transform": "translateY(-4px)",
+          "brightness": "1.05",
+          "shadow": "elevatedButton"
+        },
+        "active": {
+          "transform": "translateY(0px)",
+          "brightness": "0.98"
+        }
+      },
+      "secondaryButton": {
+        "height": "56px",
+        "padding": "16px 28px",
+        "borderRadius": "pill",
+        "background": "transparent",
+        "border": "1px solid #7C6AE6",
+        "textColor": "#7C6AE6"
+      }
+    },
+  
+    "motion": {
+      "durationFast": "150ms",
+      "durationMedium": "250ms",
+      "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+  
+    "accessibility": {
+      "minimumContrastRatio": "4.5:1",
+      "buttonMinHeight": "44px",
+      "focusRing": "2px solid #7C6AE6"
+    }
+  }
+  

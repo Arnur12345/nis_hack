@@ -41,8 +41,8 @@ export default function ActivityChart({ data }: Props) {
           <Text style={styles.summaryLabel}>За неделю</Text>
         </View>
         <View style={styles.summaryCard}>
-          <View style={[styles.summaryIcon, { backgroundColor: '#FEF3C7' }]}>
-            <Icon name="lightning-bolt" size={16} color="#B45309" />
+          <View style={[styles.summaryIcon, { backgroundColor: '#FFF8E1' }]}>
+            <Icon name="lightning-bolt" size={16} color="#F59E0B" />
           </View>
           <Text style={styles.summaryValue}>{this_week_xp}</Text>
           <Text style={styles.summaryLabel}>XP за неделю</Text>

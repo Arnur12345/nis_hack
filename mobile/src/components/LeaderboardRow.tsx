@@ -8,7 +8,7 @@ interface Props {
   entry: LeaderboardEntry;
 }
 
-const RANK_COLORS = ['#B45309', '#6B7280', '#92400E'];
+const RANK_COLORS = ['#F59E0B', '#9CA3AF', '#CD7F32'];
 
 export default function LeaderboardRow({ entry }: Props) {
   const isTop3 = entry.rank <= 3;

@@ -40,7 +40,7 @@ export default function WelcomeScreen({ navigation }: any) {
           activeOpacity={0.85}
         >
           <Text style={styles.primaryBtnText}>Войти</Text>
-          <Icon name="arrow-right" size={18} color={Colors.primary} />
+          <Icon name="arrow-right" size={18} color={Colors.tabBar} />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16, flexDirection: 'row',
     justifyContent: 'center', alignItems: 'center', gap: 8,
   },
-  primaryBtnText: { fontSize: 16, fontWeight: '700', color: Colors.primary },
+  primaryBtnText: { fontSize: 16, fontWeight: '700', color: Colors.tabBar },
   secondaryBtn: {
     borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.25)',
     borderRadius: Radius.md, paddingVertical: 16, alignItems: 'center',

@@ -29,8 +29,8 @@ export const MoodIconNames: Record<string, string> = {
 };
 
 export const MoodColors: Record<string, string> = {
-  happy: '#40916C',
-  neutral: '#B45309',
-  sad: '#DC2626',
-  sleeping: '#9CA3AF',
+  happy: '#34C759',
+  neutral: '#FFCC00',
+  sad: '#FF3B30',
+  sleeping: '#B0B0BA',
 };

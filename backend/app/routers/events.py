@@ -5,11 +5,63 @@ from app.database import get_db
 from app.middleware.auth import get_current_user
 from app.models.user import User
 from app.models.pet import Pet
-from app.services.event_service import get_events, get_event_detail, join_event, complete_event
+from app.schemas.event import EventCreateRequest, QRVerifyRequest
+from app.services.event_service import get_events, get_event_detail, join_event, complete_event, create_event, verify_qr
 from app.services.pet_service import add_xp, update_streak, pet_to_dict
 from app.services.achievement_service import check_and_award_achievements
 
 router = APIRouter(prefix="/api/v1/events", tags=["events"])
+
+
+def _complete_and_reward(db: Session, event_id: str, user: User) -> dict:
+    """Shared completion logic: mark complete, award XP, check achievements, bonus to creator."""
+    participation, event = complete_event(db, event_id, user.id)
+    if not participation:
+        raise HTTPException(status_code=400, detail="Not joined or already completed")
+
+    pet = db.query(Pet).filter(Pet.user_id == user.id).first()
+
+    streak_bonus = update_streak(db, pet)
+    total_xp = event.xp_reward + streak_bonus
+    pet = add_xp(db, pet, total_xp)
+
+    new_achievements = check_and_award_achievements(db, user.id, pet)
+    achievement_xp = sum(a.xp_bonus for a in new_achievements)
+    if achievement_xp > 0:
+        pet = add_xp(db, pet, achievement_xp)
+
+    # Creator bonus: award 10 XP to the event creator's pet
+    if event.creator_id and event.creator_id != user.id:
+        creator_pet = db.query(Pet).filter(Pet.user_id == event.creator_id).first()
+        if creator_pet:
+            add_xp(db, creator_pet, 10)
+
+    return {
+        "participation": {
+            "id": participation.id,
+            "user_id": participation.user_id,
+            "event_id": participation.event_id,
+            "status": participation.status,
+            "joined_at": participation.joined_at.isoformat(),
+            "completed_at": participation.completed_at.isoformat() if participation.completed_at else None,
+        },
+        "xp_earned": total_xp + achievement_xp,
+        "streak_bonus": streak_bonus,
+        "pet": pet_to_dict(pet),
+        "new_achievements": [
+            {"id": a.id, "key": a.key, "title": a.title, "description": a.description, "icon": a.icon, "xp_bonus": a.xp_bonus}
+            for a in new_achievements
+        ],
+    }
+
+
+@router.get("/popular")
+def popular_event(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    from app.services.event_service import get_popular_event
+    event = get_popular_event(db)
+    if not event:
+        raise HTTPException(status_code=404, detail="No events found")
+    return event
 
 
 @router.get("")
@@ -20,6 +72,21 @@ def list_events(
 ):
     events = get_events(db, category)
     return {"events": events, "count": len(events)}
+
+
+@router.post("")
+def create(
+    body: EventCreateRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    event = create_event(db, user.id, body.model_dump())
+    return {
+        "id": event.id,
+        "title": event.title,
+        "qr_code": event.qr_code,
+        "status": event.status,
+    }
 
 
 @router.get("/{event_id}")
@@ -48,41 +115,26 @@ def join(event_id: str, user: User = Depends(get_current_user), db: Session = De
 
 @router.post("/{event_id}/complete")
 def complete(event_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    participation, event = complete_event(db, event_id, user.id)
-    if not participation:
-        raise HTTPException(status_code=400, detail="Not joined or already completed")
+    return _complete_and_reward(db, event_id, user)
 
-    pet = db.query(Pet).filter(Pet.user_id == user.id).first()
 
-    # Update streak and calculate bonus
-    streak_bonus = update_streak(db, pet)
-    total_xp = event.xp_reward + streak_bonus
+@router.get("/{event_id}/qr")
+def get_qr(event_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    from app.models.event import Event
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return {"qr_code": event.qr_code, "event_id": event.id, "title": event.title}
 
-    # Add XP to pet
-    pet = add_xp(db, pet, total_xp)
 
-    # Check achievements
-    new_achievements = check_and_award_achievements(db, user.id, pet)
-
-    # Add achievement XP bonuses
-    achievement_xp = sum(a.xp_bonus for a in new_achievements)
-    if achievement_xp > 0:
-        pet = add_xp(db, pet, achievement_xp)
-
-    return {
-        "participation": {
-            "id": participation.id,
-            "user_id": participation.user_id,
-            "event_id": participation.event_id,
-            "status": participation.status,
-            "joined_at": participation.joined_at.isoformat(),
-            "completed_at": participation.completed_at.isoformat() if participation.completed_at else None,
-        },
-        "xp_earned": total_xp + achievement_xp,
-        "streak_bonus": streak_bonus,
-        "pet": pet_to_dict(pet),
-        "new_achievements": [
-            {"id": a.id, "key": a.key, "title": a.title, "description": a.description, "icon": a.icon, "xp_bonus": a.xp_bonus}
-            for a in new_achievements
-        ],
-    }
+@router.post("/{event_id}/verify-qr")
+def verify_qr_endpoint(
+    event_id: str,
+    body: QRVerifyRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    event = verify_qr(db, event_id, body.qr_code)
+    if not event:
+        raise HTTPException(status_code=400, detail="Invalid QR code")
+    return _complete_and_reward(db, event_id, user)

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, FlatList, StyleSheet, Text, RefreshControl, Platform } from 'react-native';
+import { View, FlatList, StyleSheet, Text, RefreshControl, Platform, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from '../components/Icon';
 import { getEvents } from '../api/events';
@@ -21,7 +21,7 @@ export default function EventListScreen({ navigation }: any) {
     try {
       const { data } = await getEvents(selectedCategory || undefined);
       setEvents(data.events);
-    } catch { }
+    } catch (e: any) { console.error('EventList fetch error:', e?.response?.status, e?.response?.data || e?.message); }
     setLoading(false);
     setInitialLoad(false);
   }, [selectedCategory]);
@@ -66,6 +66,14 @@ export default function EventListScreen({ navigation }: any) {
           )
         }
       />
+
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('CreateEvent')}
+        activeOpacity={0.85}
+      >
+        <Icon name="plus" size={24} color="#FFF" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -81,4 +89,10 @@ const styles = StyleSheet.create({
   empty: { alignItems: 'center', marginTop: 60, gap: 8 },
   emptyTitle: { fontSize: 17, fontWeight: '600', color: Colors.text },
   emptySub: { fontSize: 14, color: Colors.textSecondary },
+  fab: {
+    position: 'absolute', bottom: 100, right: 20,
+    width: 56, height: 56, borderRadius: 28,
+    backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 6,
+  },
 });

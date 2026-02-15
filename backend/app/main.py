@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, pet, events, gamification
+from app.routers import auth, pet, events, gamification, impact
 
 app = FastAPI(title="Spirit of the City API", version="1.0.0")
 
@@ -17,6 +17,7 @@ app.include_router(auth.router)
 app.include_router(pet.router)
 app.include_router(events.router)
 app.include_router(gamification.router)
+app.include_router(impact.router)
 
 
 @app.get("/")
